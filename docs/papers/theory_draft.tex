@@ -1,0 +1,88 @@
+\documentclass[11pt, a4paper]{article}
+
+% --- PREAMBLE ---
+\usepackage[a4paper, top=2.5cm, bottom=2.5cm, left=2cm, right=2cm]{geometry}
+\usepackage{fontspec}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{hyperref}
+
+% --- LANGUAGE & FONTS ---
+% We use babel for proper hyphenation
+\usepackage[english]{babel}
+
+% Font Configuration (Safe for Overleaf)
+% If 'Noto Sans' fails, comment these two lines out to use default fonts.
+\setmainfont{Noto Sans} 
+\setsansfont{Noto Sans}
+
+% --- METADATA ---
+\title{Physics-Informed Residual Learning for Adaptive Control\\
+\large Phase 1: Theory \& Modeling}
+\author{Basyirin Amsyar bin Basri}
+\date{February 2026}
+
+\begin{document}
+
+\maketitle
+
+\section{System Dynamics and Problem Formulation}
+
+\subsection{Nominal Dynamics}
+We consider a single-degree-of-freedom (1-DoF) rotational actuator. The fundamental equation of motion governing the system is given by:
+
+\begin{equation}
+    J \ddot{q} + F_f(\dot{q}) = \tau_{u} - \tau_{ext}
+    \label{eq:motion}
+\end{equation}
+
+where $q, \dot{q}, \ddot{q}$ represent the angular position, velocity, and acceleration, respectively. $J$ is the moment of inertia, $\tau_{u}$ is the control input (motor torque), and $\tau_{ext}$ represents external disturbances. The term $F_f(\dot{q})$ denotes the nonlinear friction torque, which is the primary source of modeling uncertainty in low-cost actuators.
+
+\subsection{The Stribeck Friction Model}
+Standard viscous damping models ($F_f = B\dot{q}$) are insufficient for precision control at low velocities due to the presence of Coulomb friction and the Stribeck effect (stick-slip phenomenon). We adopt the continuous Stribeck model to capture these dynamics:
+
+\begin{equation}
+    F_f(\dot{q}) = \text{sgn}(\dot{q}) \left[ F_c + (F_s - F_c) e^{-|\dot{q}/v_s|^\delta} \right] + \sigma \dot{q}
+    \label{eq:stribeck}
+\end{equation}
+
+The parameters are defined as:
+\begin{itemize}
+    \item $F_c$: Coulomb friction torque (dynamic sliding friction).
+    \item $F_s$: Static friction torque (breakaway torque).
+    \item $v_s$: Stribeck velocity (threshold where stiction transitions to sliding).
+    \item $\delta$: Shape factor (typically $\delta = 2$ for Gaussian decay).
+    \item $\sigma$: Viscous friction coefficient.
+\end{itemize}
+
+This nonlinearity creates a "dead zone" at zero velocity, making pure PID control ineffective (steady-state error or oscillation).
+
+\subsection{Proposed Control Architecture}
+To compensate for the uncertainty in Eq. (\ref{eq:stribeck}), we propose a composite control law. We assume the friction consists of a nominal linear component (known) and a nonlinear residual (unknown):
+
+\begin{equation}
+    F_f(\dot{q}) = \underbrace{\hat{\sigma} \dot{q}}_{\text{Nominal}} + \underbrace{\Delta(\dot{q})}_{\text{Residual}}
+\end{equation}
+
+The control input $\tau_u$ is defined as:
+
+\begin{equation}
+    \tau_u = \tau_{PID} + \tau_{PINN}(\dot{q})
+\end{equation}
+
+where:
+\begin{itemize}
+    \item $\tau_{PID}$: A standard Proportional-Integral-Derivative controller responsible for tracking the nominal error dynamics.
+    \item $\tau_{PINN}$: A Physics-Informed Neural Network (PINN) estimator trained to predict the residual term $\Delta(\dot{q})$ (the "Rust").
+\end{itemize}
+
+% --- FIGURE PLACEHOLDER ---
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.8\textwidth]{stribeck_curve_week2.png}
+    \caption{Visualization of the Stribeck Friction Curve showing the nonlinear transition from static ($F_s$) to Coulomb ($F_c$) friction.}
+    \label{fig:stribeck}
+\end{figure}
+
+\end{document}
