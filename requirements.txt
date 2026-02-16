@@ -1,0 +1,7 @@
+# Core Simulation & Math
+torch>=2.0.0      # The Differentiable Physics Engine
+numpy>=1.24.0     # Matrix Operations
+matplotlib>=3.7.0 # Visualization
+
+# Scientific Computing (Future Proofing)
+scipy>=1.10.0     # For advanced ODE solvers later
