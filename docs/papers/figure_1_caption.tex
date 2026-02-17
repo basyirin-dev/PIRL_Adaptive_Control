@@ -1,0 +1,40 @@
+% -------------------------------------------------------------------------
+% SUPERVISOR NOTE:
+% This file is currently set up as a "Standalone Preview" so you can 
+% compile it on Overleaf to verify the figure and caption look correct.
+%
+% WHEN INTEGRATING INTO YOUR MAIN PAPER:
+% Copy ONLY the code between \begin{figure} and \end{figure} 
+% and paste it into your 'main.tex' or 'theory_draft.tex'.
+% -------------------------------------------------------------------------
+
+\documentclass[10pt, a4paper]{article}
+
+% --- REQUIRED PACKAGES (Copy these to your main paper's preamble if missing) ---
+\usepackage{graphicx}  % Required for \includegraphics
+\usepackage{caption}   % Better caption formatting
+\usepackage{geometry}  % Sets page margins
+\geometry{margin=1in}  % Gives the figure breathing room
+
+\begin{document}
+
+% -------------------------------------------------------------------------
+% FIGURE 1: CONVERGENCE ANALYSIS
+% Location: Results Section or Introduction
+% -------------------------------------------------------------------------
+
+\begin{figure}[t]
+    \centering
+    % NOTE: Ensure 'Figure_1_Convergence.pdf' is uploaded to your Overleaf project!
+    \includegraphics[width=\columnwidth]{Figure_1_Convergence.pdf}
+    \caption{
+    \textbf{Convergence Comparison of Adaptive Controllers.} 
+    \textit{(Point)} The proposed Physics-Informed Residual Learning (PIRL) architecture demonstrates a significant improvement in convergence speed compared to a standard model-free Neural Network. 
+    \textit{(Evidence)} While the Pure NN (red) initializes with high variance ($RMSE > 0.5$ rad/s) and requires $>50$ epochs to approach the PID baseline, the PIRL agent (blue) leverages the Stribeck analytic prior to initialize at a near-converged state ($RMSE \approx 0.05$ rad/s). 
+    \textit{(Explanation)} This effectively reduces the hypothesis space from the full friction manifold to a sparse residual term, allowing the controller to adapt to stiction non-linearities within the first 5 epochs.
+    \textit{(Relay)} This rapid adaptation is critical for embedded deployment where training time is constrained by the 10ms control loop budget.
+    }
+    \label{fig:convergence}
+\end{figure}
+
+\end{document}

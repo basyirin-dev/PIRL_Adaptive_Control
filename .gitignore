@@ -16,4 +16,6 @@ Thumbs.db
 *.o
 *.hex
 *.elf
-build/
+build/*.pth
+__pycache__/
+.ipynb_checkpoints/
