@@ -29,11 +29,11 @@ Strict adherence to the following engineering constraints:
 
 ```bash
 # Clone repository
-git clone https://github.com/YOUR_USERNAME/PIRL_Adaptive_Control.git
+git clone [https://github.com/basyirin-dev/PIRL_Adaptive_Control.git](https://github.com/basyirin-dev/PIRL_Adaptive_Control.git)
 cd PIRL_Adaptive_Control
 
 # Install dependencies (Phase 1: Sim only)
-pip install torch numpy matplotlib scipy
+pip install -r requirements.txt
 ```
 
 ## 📚 Citation
