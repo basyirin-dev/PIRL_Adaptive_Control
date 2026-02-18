@@ -5,3 +5,10 @@ matplotlib>=3.7.0 # Visualization
 
 # Scientific Computing (Future Proofing)
 scipy>=1.10.0     # For advanced ODE solvers later
+
+# Data Handling & Enhanced Plotting (used in ablation studies)
+pandas>=1.5.0
+seaborn>=0.12.0
+
+# Jupyter environment (optional, for running notebooks)
+jupyter
