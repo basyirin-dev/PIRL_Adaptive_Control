@@ -19,3 +19,9 @@ Thumbs.db
 build/*.pth
 __pycache__/
 .ipynb_checkpoints/
+
+# VS Code
+.vscode/
+
+# Git
+.github/
