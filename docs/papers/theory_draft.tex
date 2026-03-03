@@ -7,7 +7,6 @@
 \usepackage{amssymb}
 \usepackage{graphicx}
 \usepackage{hyperref}
-
 % --- BIBLIOGRAPHY ---
 \usepackage[numbers, sort&compress]{natbib}
 
@@ -217,6 +216,85 @@ term $\Delta(\dot{q})$ --- the ``Rust.''
              nonlinear transition from static ($F_s$) to Coulomb ($F_c$)
              friction.}
     \label{fig:stribeck}
+\end{figure}
+
+% -------------------------------------------------------------------------
+\subsection{State-Space Symmetry and Residual Harvesting}
+% -------------------------------------------------------------------------
+
+The Stribeck model in Eq.~(\ref{eq:stribeck}) is physically symmetric: the
+breakaway torque required to overcome stiction in the clockwise direction
+is identically non-linear to that required in the counter-clockwise
+direction, differing only in sign via the $\mathrm{sgn}(\dot{q})$ factor.
+This physical reality imposes a hard constraint on the data collection
+policy for the residual learner. We define the full operational velocity
+domain as $\mathcal{V} = [-v_{\max}, v_{\max}]$, where $v_{\max} = 11.92$\,rad/s
+as determined from the Week~6 hardware characterisation sweep, and
+partition it into two primary velocity bins:
+\begin{equation}
+    B^- = [-v_{\max},\; 0), \qquad B^+ = (0,\; v_{\max}].
+    \label{eq:bins}
+\end{equation}
+Let $\rho(v)$ denote the sample density over $\mathcal{V}$ within the
+replay buffer $\mathcal{D}$ of size $N$. The Symmetric Harvesting Protocol
+enforces the following continuous density constraint:
+\begin{equation}
+    \int_{B^-} \rho(v)\, dv \;\approx\; \int_{B^+} \rho(v)\, dv,
+    \label{eq:density}
+\end{equation}
+which in discrete terms over the buffer is enforced as:
+\begin{equation}
+    \bigl|\{ v_i \in \mathcal{D} \mid v_i < 0 \}\bigr|
+    \;=\;
+    \bigl|\{ v_i \in \mathcal{D} \mid v_i > 0 \}\bigr|.
+    \label{eq:discrete}
+\end{equation}
+The Week~6 harvesting dataset ($N = 2000$) validates that this constraint
+is satisfied: $|B^-| = 983$ and $|B^+| = 1017$, yielding a balance ratio
+of $0.967$ and a directional imbalance of only $1.70\%$.
+
+Unconstrained state-space exploration violates Eq.~(\ref{eq:discrete}) and
+causes directional instability in the learned residual. Because neural
+networks prioritize learning low-frequency, high-amplitude approximations
+before resolving fine structure --- a consequence of the spectral bias
+demonstrated by \citet{rahaman2019spectralbiasneuralnetworks}, where
+Fourier components $\hat{f}_\theta(k)$ decay as $k^{-(d+1)}$ --- a buffer
+concentrated in $B^+$ anchors the network's spectral focus to the positive
+quadrant. The residual function $f_\theta(v)$ then operates severely
+out-of-distribution whenever the motor reverses into $B^-$. The
+consequence is not gradual performance degradation; it is a hallucinated
+friction correction injected at the zero-crossing, precisely where the
+Stribeck nonlinearity is steepest and where the PID loop has the least
+phase margin to absorb an erroneous feed-forward term. This violates the
+10\,ms loop stability criterion because the PID's integral action begins
+fighting a fictitious torque rather than the true stiction residual.
+
+The empirical cost of violating Eq.~(\ref{eq:discrete}) is quantified in
+the convergence ablation study. As shown in Fig.~\ref{fig:ablation}, the
+asymmetric buffer baseline --- identical in architecture and
+hyperparameters but with the harvesting constraint removed --- diverges
+sharply from the symmetric PIRL trajectory, with the gap opening within
+the first five epochs and widening monotonically thereafter. The symmetric PIRL achieves a final tracking RMSE of $0.00357$\,rad,
+consistent with full coverage of the friction manifold across both $B^-$
+and $B^+$. Removing the harvesting constraint while holding all other
+hyperparameters fixed --- an asymmetric buffer biased $85\%$ toward $B^+$
+across $10{,}000$ samples --- increased RMSE to $0.00505$\,rad, a
+degradation of $41.32\%$ evaluated specifically across $B^-$ and the
+$v \approx 0$ boundary. This confirms that the performance gap is not
+distributed uniformly across the velocity domain; it is concentrated
+precisely at the zero-crossing where spectral bias leaves the residual
+function out-of-distribution.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.8\textwidth]{Figure_1_Convergence_Ablation.png}
+    \caption{Convergence ablation: PIRL with the Symmetric Harvesting
+             Protocol (solid) versus the asymmetric buffer baseline (dashed).
+             The divergence opening within the first five epochs confirms
+             that equal sample density across $B^-$ and $B^+$ is a
+             necessary condition for stable residual learning across the
+             full Stribeck manifold.}
+    \label{fig:ablation}
 \end{figure}
 
 
