@@ -35,7 +35,8 @@ jobs:
     - name: Run Unit Tests
       run: |
         # Verify environment step logic and physics determinism
-        pytest sim/test_sim.py
+        # PYTHONPATH is explicitly set to include 'sim' so 'from sim_env' resolves correctly
+        PYTHONPATH=sim pytest sim/test_sim.py
 
     - name: Execute Phase 1 Gate Check
       run: |
