@@ -19,27 +19,15 @@ jobs:
     - name: Checkout LFS objects
       run: git lfs checkout
 
-    - name: Set up Python 3.10
-      uses: actions/setup-python@v5
-      with:
-        python-version: "3.10"
-        cache: 'pip'
+    - name: Build PIRL Docker Image
+      run: docker build -t pirl-sim-env:latest .
 
-    - name: Install Dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install pytest
-        # Specifically targeting the requirements in the project path
-        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-
-    - name: Run Unit Tests
-      run: |
-        # Verify environment step logic and physics determinism
-        # PYTHONPATH is explicitly set to include 'sim' so 'from sim_env' resolves correctly
-        PYTHONPATH=sim pytest sim/test_sim.py
+    - name: Run Unit Tests (Docker)
+      # Overriding entrypoint to run tests inside the identical container environment
+      # Note: Ensure pytest is listed in your requirements.txt
+      run: docker run --entrypoint python pirl-sim-env:latest -m pytest sim/test_sim.py
 
     - name: Execute Phase 1 Gate Check
-      run: |
-        # MANDATORY: RMSE < 0.05 rad assertion.
-        # This script acts as the final strategic gatekeeper.
-        python reproduce_results.py
+      # MANDATORY: RMSE < 0.05 rad assertion.
+      # This containerized script acts as the final strategic gatekeeper.
+      run: docker run pirl-sim-env:latest
