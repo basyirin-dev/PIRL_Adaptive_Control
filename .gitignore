@@ -1,27 +1,58 @@
-# Python
+# ── Python ────────────────────────────────────────────────────────────────────
 __pycache__/
 *.py[cod]
 *$py.class
 .venv/
 env/
 
-# Jupyter
-.ipynb_checkpoints
+# ── Virtualenv (project venv is named PIRL/) ──────────────────────────────────
+PIRL/
 
-# OS
+# ── Jupyter ───────────────────────────────────────────────────────────────────
+.ipynb_checkpoints/
+
+# ── OS ────────────────────────────────────────────────────────────────────────
 .DS_Store
 Thumbs.db
 
-# Build Output
-*.o
-*.hex
-*.elf
-build/*.pth
-__pycache__/
-.ipynb_checkpoints/
+# ── PlatformIO ────────────────────────────────────────────────────────────────
+firmware/.pio/
 
-# VS Code
+# ── Compiled binaries (rebuilt from source) ───────────────────────────────────
+firmware/cross_val_binary
+firmware/closed_loop_binary
+firmware/latency_benchmark
+
+# ── Generated test outputs ────────────────────────────────────────────────────
+firmware/traj.csv
+firmware/cross_validation_result.png
+firmware/closed_loop_simulation.png
+
+# ── C/C++ build artifacts ─────────────────────────────────────────────────────
+*.o
+*.a
+*.elf
+*.hex
+*.bin
+*.map
+
+# ── LaTeX build products (keep .tex and .bib, not compiled output) ────────────
+docs/papers/*.bbl
+docs/papers/*.pdf
+docs/papers/*.aux
+docs/papers/*.log
+docs/papers/*.out
+docs/papers/*.toc
+docs/papers/*.fls
+docs/papers/*.fdb_latexmk
+# Uncomment the next line if you want to track the paper PDF explicitly:
+# !docs/papers/theory_draft.pdf
+
+# ── VS Code ───────────────────────────────────────────────────────────────────
 .vscode/
 
-# Git
-.github/
+# ── Miscellaneous ─────────────────────────────────────────────────────────────
+*.swp
+*.swo
+build/
+dist/
