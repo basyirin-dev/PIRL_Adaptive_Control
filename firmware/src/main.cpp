@@ -145,7 +145,7 @@ static void setMotorVoltage(float v) {
 // ============================================================================
 
 void setup() {
-    Serial.begin(2000000);   // 2 Mbaud — low-latency logging
+    Serial.begin(115200);   // 2 Mbaud — low-latency logging
 
     // Wait up to 2 s for Serial monitor (USB CDC).
     // Skip wait on power-up without host connected.
